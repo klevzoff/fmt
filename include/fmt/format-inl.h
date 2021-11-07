@@ -656,8 +656,6 @@ struct gen_digits_handler {
                                         bool integral) {
     FMT_ASSERT(remainder < divisor, "");
     buf[size++] = digit;
-    if (!integral && error >= remainder) return digits::error;
-    if (size < precision) return digits::more;
     if (!integral) {
       // Check if error * 2 < divisor with overflow prevention.
       // The check is not needed for the integral part because error = 1
@@ -666,6 +664,7 @@ struct gen_digits_handler {
     } else {
       FMT_ASSERT(error == 1 && divisor > 2, "");
     }
+    if (size < precision) return digits::more;
     auto dir = get_round_direction(divisor, remainder, error);
     if (dir != round_direction::up)
       return dir == round_direction::down ? digits::done : digits::error;
